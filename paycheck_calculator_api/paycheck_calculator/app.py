@@ -65,11 +65,6 @@ def calculate():
         stateTaxPercent = float(round(stateTaxTotal, 2)) * 100 / float(mySalary)
         federalTaxPercent = float(round(federalTaxTotal, 2)) * 100 / float(mySalary)
 
-        data['salaryWorkSavingInfo']['stateTaxTotal'] = round(stateTaxTotal, 2)
-        data['salaryWorkSavingInfo']['federalTaxTotal'] = round(federalTaxTotal, 2)
-        data['salaryWorkSavingInfo']['stateTaxPercent'] = round(stateTaxPercent, 2)
-        data['salaryWorkSavingInfo']['federalTaxPercent'] = round(federalTaxPercent, 2)
-
         # FICA section
         socialSecurityTaxAmount = 0.0
         socialSecurityTaxPercent = 0.0
@@ -77,81 +72,107 @@ def calculate():
             socialSecurityTaxAmount = 8537.40
             socialSecurityTaxPercent = round(8537.40 * 100 / float(mySalary), 2)
         else:
-            socialSecurityTaxAmount = round(float(mySalary) * 6.2 /100, 2)
+            socialSecurityTaxAmount = round(float(mySalary) * 6.2 / 100, 2)
             socialSecurityTaxPercent = 6.2
-        data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] = round(socialSecurityTaxAmount, 2)
-        data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] = round(socialSecurityTaxPercent, 2)
+        if data['salaryWorkSavingInfo']['payFrequency'] == 365:
+            data['salaryWorkSavingInfo']['stateTaxTotal'] = round(stateTaxTotal, 2)
+            data['salaryWorkSavingInfo']['federalTaxTotal'] = round(federalTaxTotal, 2)
+            data['salaryWorkSavingInfo']['stateTaxPercent'] = round(stateTaxPercent, 2)
+            data['salaryWorkSavingInfo']['federalTaxPercent'] = round(federalTaxPercent, 2)
 
-        socialSecurityTaxPercent = 1.45
-        socialSecurityTaxAmount = float(mySalary) * 1.45/100
-        data['salaryWorkSavingInfo']['medicareTaxPercent'] = round(socialSecurityTaxPercent, 2)
-        data['salaryWorkSavingInfo']['medicareTaxAmount'] = round(socialSecurityTaxAmount, 2)
 
-        netIncome = float(mySalary) \
-                    - data['salaryWorkSavingInfo']['stateTaxTotal'] \
-                    - data['salaryWorkSavingInfo']['federalTaxTotal'] \
-                    - data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] \
-                    - data['salaryWorkSavingInfo']['medicareTaxAmount']
-        data['salaryWorkSavingInfo']['netIncome'] = '{:,.2f}'.format(netIncome)
-        data['salaryWorkSavingInfo']['totalTaxAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['federalTaxTotal'] + data['salaryWorkSavingInfo']['stateTaxTotal'])
-        data['salaryWorkSavingInfo']['totalFicaAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] + data['salaryWorkSavingInfo']['medicareTaxAmount'])
+            data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] = round(socialSecurityTaxAmount, 2)
+            data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] = round(socialSecurityTaxPercent, 2)
 
-        data['salaryWorkSavingInfo']['totalTaxPercent'] = '{:,.2f}'.format(
-            data['salaryWorkSavingInfo']['federalTaxPercent'] + data['salaryWorkSavingInfo']['stateTaxPercent'])
-        data['salaryWorkSavingInfo']['totalFicaPercent'] = '{:,.2f}'.format(
-            data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] + data['salaryWorkSavingInfo']['medicareTaxPercent'])
+            socialSecurityTaxPercent = 1.45
+            socialSecurityTaxAmount = float(mySalary) * 1.45/100
+            data['salaryWorkSavingInfo']['medicareTaxPercent'] = round(socialSecurityTaxPercent, 2)
+            data['salaryWorkSavingInfo']['medicareTaxAmount'] = round(socialSecurityTaxAmount, 2)
 
-        data['salaryWorkSavingInfo']['takeHomeSalaryTaxPercent'] = '{:,.2f}'.format(float(100.00) - float(data['salaryWorkSavingInfo']['totalTaxPercent']) - float(data['salaryWorkSavingInfo']['totalFicaPercent']))
-        if data['salaryWorkSavingInfo']['payFrequency'] == 15:
-            data['salaryWorkSavingInfo']['stateTaxTotal'] = float(data['salaryWorkSavingInfo']['stateTaxTotal']) / 24.00
-            data['salaryWorkSavingInfo']['federalTaxTotal'] = float(
-                data['salaryWorkSavingInfo']['federalTaxTotal']) / 24.00
-            data['salaryWorkSavingInfo']['stateTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['stateTaxPercent']) / 24.00
-            data['salaryWorkSavingInfo']['federalTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['federalTaxPercent']) / 24.00
-            data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] = float(
-                data['salaryWorkSavingInfo']['socialSecurityTaxAmount']) / 24.00
-            data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['socialSecurityTaxPercent']) / 24.00
-            data['salaryWorkSavingInfo']['medicareTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['medicareTaxPercent']) / 24.00
-            data['salaryWorkSavingInfo']['medicareTaxAmount'] = float(
-                data['salaryWorkSavingInfo']['medicareTaxAmount']) / 24.00
-            data['salaryWorkSavingInfo']['netIncome'] = float(data['salaryWorkSavingInfo']['netIncome']) / 24.00
-            data['salaryWorkSavingInfo']['totalTaxAmount'] = float(
-                data['salaryWorkSavingInfo']['totalTaxAmount']) / 24.00
-            data['salaryWorkSavingInfo']['totalFicaAmount'] = float(
-                data['salaryWorkSavingInfo']['totalFicaAmount']) / 24.00
-            data['salaryWorkSavingInfo']['totalTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['totalTaxPercent']) / 24.00
-            data['salaryWorkSavingInfo']['totalFicaPercent'] = float(
-                data['salaryWorkSavingInfo']['totalFicaPercent']) / 24.00
+            netIncome = float(mySalary) \
+                        - data['salaryWorkSavingInfo']['stateTaxTotal'] \
+                        - data['salaryWorkSavingInfo']['federalTaxTotal'] \
+                        - data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] \
+                        - data['salaryWorkSavingInfo']['medicareTaxAmount']
+            data['salaryWorkSavingInfo']['netIncome'] = '{:,.2f}'.format(netIncome)
+            data['salaryWorkSavingInfo']['totalTaxAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['federalTaxTotal'] + data['salaryWorkSavingInfo']['stateTaxTotal'])
+            data['salaryWorkSavingInfo']['totalFicaAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] + data['salaryWorkSavingInfo']['medicareTaxAmount'])
+
+            data['salaryWorkSavingInfo']['totalTaxPercent'] = '{:,.2f}'.format(
+                data['salaryWorkSavingInfo']['federalTaxPercent'] + data['salaryWorkSavingInfo']['stateTaxPercent'])
+            data['salaryWorkSavingInfo']['totalFicaPercent'] = '{:,.2f}'.format(
+                data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] + data['salaryWorkSavingInfo']['medicareTaxPercent'])
+
+            data['salaryWorkSavingInfo']['takeHomeSalaryTaxPercent'] = '{:,.2f}'.format(float(100.00) \
+                                                                                        - float(data['salaryWorkSavingInfo']['totalTaxPercent'])
+                                                                                        - float(data['salaryWorkSavingInfo']['totalFicaPercent']))
+            data['salaryWorkSavingInfo']['grossPaycheck'] = '{:,.2f}'.format(float(mySalary))
+
+        elif data['salaryWorkSavingInfo']['payFrequency'] == 15:
+            data['salaryWorkSavingInfo']['stateTaxTotal'] = round(stateTaxTotal/24, 2)
+            data['salaryWorkSavingInfo']['federalTaxTotal'] = round(federalTaxTotal/24, 2)
+            data['salaryWorkSavingInfo']['stateTaxPercent'] = round(stateTaxPercent/24, 2)
+            data['salaryWorkSavingInfo']['federalTaxPercent'] = round(federalTaxPercent/24, 2)
+
+            mySalary = float(mySalary) / 24.00
+            data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] = round(socialSecurityTaxAmount/24, 2)
+            data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] = round(socialSecurityTaxPercent/24, 2)
+            socialSecurityTaxPercent = 1.45
+            socialSecurityTaxAmount = float(mySalary) * 1.45/100
+            data['salaryWorkSavingInfo']['medicareTaxPercent'] = round(socialSecurityTaxPercent/24, 2)
+            data['salaryWorkSavingInfo']['medicareTaxAmount'] = round(socialSecurityTaxAmount/24, 2)
+
+            netIncome = float(mySalary) \
+                        - data['salaryWorkSavingInfo']['stateTaxTotal'] \
+                        - data['salaryWorkSavingInfo']['federalTaxTotal'] \
+                        - data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] \
+                        - data['salaryWorkSavingInfo']['medicareTaxAmount']
+            data['salaryWorkSavingInfo']['netIncome'] = '{:,.2f}'.format(netIncome)
+            data['salaryWorkSavingInfo']['totalTaxAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['federalTaxTotal'] + data['salaryWorkSavingInfo']['stateTaxTotal'])
+            data['salaryWorkSavingInfo']['totalFicaAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] + data['salaryWorkSavingInfo']['medicareTaxAmount'])
+
+            data['salaryWorkSavingInfo']['totalTaxPercent'] = '{:,.2f}'.format(
+                data['salaryWorkSavingInfo']['federalTaxPercent'] + data['salaryWorkSavingInfo']['stateTaxPercent'])
+            data['salaryWorkSavingInfo']['totalFicaPercent'] = '{:,.2f}'.format(
+                data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] + data['salaryWorkSavingInfo']['medicareTaxPercent'])
+
+            data['salaryWorkSavingInfo']['takeHomeSalaryTaxPercent'] = '{:,.2f}'.format(float(100.00) \
+                                                                                        - float(data['salaryWorkSavingInfo']['totalTaxPercent'])
+                                                                                        - float(data['salaryWorkSavingInfo']['totalFicaPercent']))
+            data['salaryWorkSavingInfo']['grossPaycheck'] = '{:,.2f}'.format(float(mySalary))
         elif data['salaryWorkSavingInfo']['payFrequency'] == 14:
-            data['salaryWorkSavingInfo']['stateTaxTotal'] = float(data['salaryWorkSavingInfo']['stateTaxTotal']) / 26.00
-            data['salaryWorkSavingInfo']['federalTaxTotal'] = float(
-                data['salaryWorkSavingInfo']['federalTaxTotal']) / 26.00
-            data['salaryWorkSavingInfo']['stateTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['stateTaxPercent']) / 26.00
-            data['salaryWorkSavingInfo']['federalTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['federalTaxPercent']) / 26.00
-            data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] = float(
-                data['salaryWorkSavingInfo']['socialSecurityTaxAmount']) / 26.00
-            data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['socialSecurityTaxPercent']) / 26.00
-            data['salaryWorkSavingInfo']['medicareTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['medicareTaxPercent']) / 26.00
-            data['salaryWorkSavingInfo']['medicareTaxAmount'] = float(
-                data['salaryWorkSavingInfo']['medicareTaxAmount']) / 26.00
-            data['salaryWorkSavingInfo']['netIncome'] = float(data['salaryWorkSavingInfo']['netIncome']) / 26.00
-            data['salaryWorkSavingInfo']['totalTaxAmount'] = float(
-                data['salaryWorkSavingInfo']['totalTaxAmount']) / 26.00
-            data['salaryWorkSavingInfo']['totalFicaAmount'] = float(
-                data['salaryWorkSavingInfo']['totalFicaAmount']) / 26.00
-            data['salaryWorkSavingInfo']['totalTaxPercent'] = float(
-                data['salaryWorkSavingInfo']['totalTaxPercent']) / 26.00
-            data['salaryWorkSavingInfo']['totalFicaPercent'] = float(
-                data['salaryWorkSavingInfo']['totalFicaPercent']) / 26.00
+            data['salaryWorkSavingInfo']['stateTaxTotal'] = round(stateTaxTotal/26, 2)
+            data['salaryWorkSavingInfo']['federalTaxTotal'] = round(federalTaxTotal/26, 2)
+            data['salaryWorkSavingInfo']['stateTaxPercent'] = round(stateTaxPercent/26, 2)
+            data['salaryWorkSavingInfo']['federalTaxPercent'] = round(federalTaxPercent/26, 2)
+
+            mySalary = float(mySalary) / 26.00
+            data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] = round(socialSecurityTaxAmount/26, 2)
+            data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] = round(socialSecurityTaxPercent/26, 2)
+            socialSecurityTaxPercent = 1.45
+            socialSecurityTaxAmount = float(mySalary) * 1.45/100
+            data['salaryWorkSavingInfo']['medicareTaxPercent'] = round(socialSecurityTaxPercent/26, 2)
+            data['salaryWorkSavingInfo']['medicareTaxAmount'] = round(socialSecurityTaxAmount/26, 2)
+
+            netIncome = float(mySalary) \
+                        - data['salaryWorkSavingInfo']['stateTaxTotal'] \
+                        - data['salaryWorkSavingInfo']['federalTaxTotal'] \
+                        - data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] \
+                        - data['salaryWorkSavingInfo']['medicareTaxAmount']
+            data['salaryWorkSavingInfo']['netIncome'] = '{:,.2f}'.format(netIncome)
+            data['salaryWorkSavingInfo']['totalTaxAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['federalTaxTotal'] + data['salaryWorkSavingInfo']['stateTaxTotal'])
+            data['salaryWorkSavingInfo']['totalFicaAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] + data['salaryWorkSavingInfo']['medicareTaxAmount'])
+
+            data['salaryWorkSavingInfo']['totalTaxPercent'] = '{:,.2f}'.format(
+                data['salaryWorkSavingInfo']['federalTaxPercent'] + data['salaryWorkSavingInfo']['stateTaxPercent'])
+            data['salaryWorkSavingInfo']['totalFicaPercent'] = '{:,.2f}'.format(
+                data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] + data['salaryWorkSavingInfo']['medicareTaxPercent'])
+
+            data['salaryWorkSavingInfo']['takeHomeSalaryTaxPercent'] = '{:,.2f}'.format(float(100.00) \
+                                                                                        - float(data['salaryWorkSavingInfo']['totalTaxPercent'])
+                                                                                        - float(data['salaryWorkSavingInfo']['totalFicaPercent']))
+            data['salaryWorkSavingInfo']['grossPaycheck'] = '{:,.2f}'.format(float(mySalary))
+
 
     except ClientError as e:
         print(e.response['Error']['Message'])
