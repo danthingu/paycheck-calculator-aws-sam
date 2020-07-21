@@ -10,9 +10,6 @@ from botocore.exceptions import ClientError
 from flask_lambda import FlaskLambda
 from flask import request
 import csv
-from salary_work_savings import SalaryWorkSavingsInfo
-
-salaryWorkSavings = SalaryWorkSavingsInfo()
 
 app = FlaskLambda(__name__)
 CORS(app)
@@ -25,6 +22,42 @@ federal_tax_table = ddb.Table('federal_tax')
 def index():
     return json_response({"message": "1234Hello, world!"})
 
+def compound_interest_calculator(original_principal, annual_interest, compound, total_years, monthly_contribution):
+    # original_principal = int(input('Enter the starting principal: '))
+    # 
+    # # Input the annual interest rate.
+    # 
+    # annual_interest = float(input('Enter the annual interest rate (%): '))
+    annual_interest = float(float(annual_interest) / 100.00)
+    # 
+    # # Input times per year the interest is compounded.
+    # 
+    # compound = int(input('How many times per year is the interest compounded? '))
+    # 
+    # # Input number of years account will earn interest.
+    # 
+    # total_years = int(input('For how many years will the account earn interest? '))
+
+    # Calculate ending principle amount after earning annual
+    # interest for a specified amount of years.
+
+    # compound_interest_principal = float(original_principal) + (float(original_principal) * (float((1 + float(annual_interest) / float(compound))) ** (float(total_years) * float(compound)) - 1))
+    compound_interest_principal = (float(original_principal) *
+                                   (
+                                           float((1 + float(annual_interest) / float(compound))) **
+                                           (float(total_years) * float(compound))
+                                   )
+                                   )
+    future_value_of_series = float(monthly_contribution) * ((float((1 + float(annual_interest) / float(compound))) ** (float(total_years) * float(compound))) - 1) / (float(annual_interest) / float(compound))
+    # Display the ending principle amount.
+    total = compound_interest_principal + future_value_of_series
+    print('At the end of ', total_years, 'years you will have $',
+          format(compound_interest_principal, '.2f'))
+    print('At the end of ', total_years, 'years you will have $',
+          format(future_value_of_series, '.2f'))
+    print('At the end of ', total_years, 'years you will have $',
+          format(total, '.2f'))
+    return '{:,.2f}'.format(total)
 
 @app.route('/calculate_paycheck', methods=['POST'])
 def calculate():
@@ -33,7 +66,7 @@ def calculate():
         stateTaxTable = state_tax_table.scan()['Items']
         federalTaxTable = federal_tax_table.scan()['Items']
         mySalary = data['salaryWorkSavingInfo']['salaryInput']
-        # tempDict = next((item for item in stateTaxTable if float(item["single_bracket"]) <= float(mySalary)), None)
+        # tempDict = next((item for item in stateTaxTable if float(item["single_bracket"]) <= float(mySalary)), None)whatever
         tempStateTaxTableDict = sorted(
             list(filter(lambda item: item['single_bracket'] <= float(mySalary), stateTaxTable)),
             key=lambda item: item['single_bracket'])
@@ -173,6 +206,9 @@ def calculate():
                                                                                         - float(data['salaryWorkSavingInfo']['totalFicaPercent']))
             data['salaryWorkSavingInfo']['grossPaycheck'] = '{:,.2f}'.format(float(mySalary))
 
+        data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = '{:,.2f}'.format(((float(data['salaryWorkSavingInfo']['netIncome'].replace(',', '')) * float(data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00))/12.00)
+        data['salaryWorkSavingInfo']['futureCompoundInterest'] = compound_interest_calculator(data['salaryWorkSavingInfo']['currentSavingAmount'], data['salaryWorkSavingInfo']['apyAnnually'], 12, data['salaryWorkSavingInfo']['yearSaved'],
+                                                                                              data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'].replace(',',''))
 
     except ClientError as e:
         print(e.response['Error']['Message'])
