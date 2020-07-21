@@ -10,6 +10,8 @@ from botocore.exceptions import ClientError
 from flask_lambda import FlaskLambda
 from flask import request
 import csv
+import datetime
+
 
 app = FlaskLambda(__name__)
 CORS(app)
@@ -209,7 +211,7 @@ def calculate():
         data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = '{:,.2f}'.format(((float(data['salaryWorkSavingInfo']['netIncome'].replace(',', '')) * float(data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00))/12.00)
         data['salaryWorkSavingInfo']['futureCompoundInterest'] = compound_interest_calculator(data['salaryWorkSavingInfo']['currentSavingAmount'], data['salaryWorkSavingInfo']['apyAnnually'], 12, data['salaryWorkSavingInfo']['yearSaved'],
                                                                                               data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'].replace(',',''))
-
+        data['salaryWorkSavingInfo']['yearFuture'] = datetime.datetime.now().year + int(data['salaryWorkSavingInfo']['yearSaved'])
     except ClientError as e:
         print(e.response['Error']['Message'])
     return json_response(data)
