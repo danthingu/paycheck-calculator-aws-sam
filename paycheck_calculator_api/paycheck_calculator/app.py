@@ -130,10 +130,6 @@ def calculate():
                         - data['salaryWorkSavingInfo']['federalTaxTotal'] \
                         - data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] \
                         - data['salaryWorkSavingInfo']['medicareTaxAmount']
-            data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = '{:,.2f}'.format(((
-                        float(data['salaryWorkSavingInfo']['netIncome'].replace(',', '')) * float(
-                    data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00)) / 12.00)
-
             data['salaryWorkSavingInfo']['netIncome'] = '{:,.2f}'.format(netIncome)
             data['salaryWorkSavingInfo']['totalTaxAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['federalTaxTotal'] + data['salaryWorkSavingInfo']['stateTaxTotal'])
             data['salaryWorkSavingInfo']['totalFicaAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] + data['salaryWorkSavingInfo']['medicareTaxAmount'])
@@ -167,13 +163,7 @@ def calculate():
                         - data['salaryWorkSavingInfo']['federalTaxTotal'] \
                         - data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] \
                         - data['salaryWorkSavingInfo']['medicareTaxAmount']
-
             data['salaryWorkSavingInfo']['netIncome'] = '{:,.2f}'.format(netIncome)
-
-            data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = '{:,.2f}'.format(((
-                    float(data['salaryWorkSavingInfo']['netIncome'].replace(',', '')) * float(
-                data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00)) / 12.00)
-
             data['salaryWorkSavingInfo']['totalTaxAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['federalTaxTotal'] + data['salaryWorkSavingInfo']['stateTaxTotal'])
             data['salaryWorkSavingInfo']['totalFicaAmount'] = '{:,.2f}'.format(data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] + data['salaryWorkSavingInfo']['medicareTaxAmount'])
 
@@ -218,10 +208,12 @@ def calculate():
                                                                                         - float(data['salaryWorkSavingInfo']['totalTaxPercent'])
                                                                                         - float(data['salaryWorkSavingInfo']['totalFicaPercent']))
             data['salaryWorkSavingInfo']['grossPaycheck'] = '{:,.2f}'.format(float(mySalary))
+        data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = '{:,.2f}'.format(float(((float(data['salaryWorkSavingInfo']['netIncome'].replace(',', '')) * float(data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00))/12.00))
 
         data['salaryWorkSavingInfo']['futureCompoundInterest'] = compound_interest_calculator(data['salaryWorkSavingInfo']['currentSavingAmount'], data['salaryWorkSavingInfo']['apyAnnually'], 12, data['salaryWorkSavingInfo']['yearSaved'],
                                                                                               data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'].replace(',',''))
         data['salaryWorkSavingInfo']['yearFuture'] = datetime.datetime.now().year + int(data['salaryWorkSavingInfo']['yearSaved'])
+
     except ClientError as e:
         print(e.response['Error']['Message'])
     return json_response(data)
