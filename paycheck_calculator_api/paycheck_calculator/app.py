@@ -61,6 +61,31 @@ def compound_interest_calculator(original_principal, annual_interest, compound, 
           format(total, '.2f'))
     return '{:,.2f}'.format(total)
 
+def calculate_monthly_contribution_percent_saved(data, stateTaxTotal, federalTaxTotal, stateTaxPercent, federalTaxPercent, socialSecurityTaxAmount, socialSecurityTaxPercent, mySalary):
+    data['salaryWorkSavingInfo']['stateTaxTotal'] = round(stateTaxTotal, 2)
+    data['salaryWorkSavingInfo']['federalTaxTotal'] = round(federalTaxTotal, 2)
+    data['salaryWorkSavingInfo']['stateTaxPercent'] = round(stateTaxPercent, 2)
+    data['salaryWorkSavingInfo']['federalTaxPercent'] = round(federalTaxPercent, 2)
+
+    data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] = round(socialSecurityTaxAmount, 2)
+    data['salaryWorkSavingInfo']['socialSecurityTaxPercent'] = round(socialSecurityTaxPercent, 2)
+
+    socialSecurityTaxPercent = 1.45
+    socialSecurityTaxAmount = float(mySalary) * 1.45 / 100
+    data['salaryWorkSavingInfo']['medicareTaxPercent'] = round(socialSecurityTaxPercent, 2)
+    data['salaryWorkSavingInfo']['medicareTaxAmount'] = round(socialSecurityTaxAmount, 2)
+
+    netIncome = float(mySalary) \
+                - data['salaryWorkSavingInfo']['stateTaxTotal'] \
+                - data['salaryWorkSavingInfo']['federalTaxTotal'] \
+                - data['salaryWorkSavingInfo']['socialSecurityTaxAmount'] \
+                - data['salaryWorkSavingInfo']['medicareTaxAmount']
+    monthlyPutAsideFromPaycheck = '{:,.2f}'.format(float(((
+                float(netIncome) * float(
+            data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00)) / 12.00))
+    return monthlyPutAsideFromPaycheck
+
+
 @app.route('/calculate_paycheck', methods=['POST'])
 def calculate():
     try:
@@ -109,6 +134,8 @@ def calculate():
         else:
             socialSecurityTaxAmount = round(float(mySalary) * 6.2 / 100, 2)
             socialSecurityTaxPercent = 6.2
+
+        data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = calculate_monthly_contribution_percent_saved(data, stateTaxTotal, federalTaxTotal, stateTaxPercent, federalTaxPercent, socialSecurityTaxAmount, socialSecurityTaxPercent, mySalary)
 
         if data['salaryWorkSavingInfo']['payFrequency'] == 365:
             data['salaryWorkSavingInfo']['stateTaxTotal'] = round(stateTaxTotal, 2)
@@ -208,7 +235,7 @@ def calculate():
                                                                                         - float(data['salaryWorkSavingInfo']['totalTaxPercent'])
                                                                                         - float(data['salaryWorkSavingInfo']['totalFicaPercent']))
             data['salaryWorkSavingInfo']['grossPaycheck'] = '{:,.2f}'.format(float(mySalary))
-        data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = '{:,.2f}'.format(float(((float(data['salaryWorkSavingInfo']['netIncome'].replace(',', '')) * float(data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00))/12.00))
+        # data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'] = '{:,.2f}'.format(float(((float(data['salaryWorkSavingInfo']['netIncome'].replace(',', '')) * float(data['salaryWorkSavingInfo']['paycheckPercentSaved']) / 100.00))/12.00))
 
         data['salaryWorkSavingInfo']['futureCompoundInterest'] = compound_interest_calculator(data['salaryWorkSavingInfo']['currentSavingAmount'], data['salaryWorkSavingInfo']['apyAnnually'], 12, data['salaryWorkSavingInfo']['yearSaved'],
                                                                                               data['salaryWorkSavingInfo']['monthlyPutAsideFromPaycheck'].replace(',',''))
